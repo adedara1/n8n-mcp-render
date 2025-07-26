@@ -2,7 +2,7 @@
 # Ultra-optimized Dockerfile - minimal runtime dependencies (no n8n packages)
 
 # Stage 1: Builder (TypeScript compilation only)
-FROM node:20-alpine AS builder
+FROM node:24.4.1-alpine AS builder
 WORKDIR /app
 
 # Copy tsconfig for TypeScript compilation
@@ -22,7 +22,7 @@ COPY src ./src
 RUN npx tsc
 
 # Stage 2: Runtime (minimal dependencies)
-FROM node:20-alpine AS runtime
+FROM node:24.4.1-alpine AS runtime
 WORKDIR /app
 
 # Install only essential runtime tools

@@ -482,7 +482,7 @@ secrets:
 
 ### Image Details
 
-- Base: `node:20-alpine`
+- Base: `node:24.4.1-alpine`
 - Size: ~280MB compressed
 - Features: Pre-built database with all node information
 - Database: Complete SQLite with 525+ nodes

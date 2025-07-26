@@ -1,5 +1,5 @@
 # Quick test Dockerfile using pre-built files
-FROM node:20-alpine
+FROM node:24.4.1-alpine
 
 WORKDIR /app
 
