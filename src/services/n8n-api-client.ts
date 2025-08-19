@@ -24,10 +24,13 @@ import {
 } from '../types/n8n-api';
 import { handleN8nApiError, logN8nError } from '../utils/n8n-errors';
 import { cleanWorkflowForCreate, cleanWorkflowForUpdate } from './n8n-validation';
+import { Agent as HttpsAgent } from 'https';
+import { Agent as HttpAgent } from 'http';
 
 export interface N8nApiClientConfig {
   baseUrl: string;
   apiKey: string;
+  ipv4: boolean;
   timeout?: number;
   maxRetries?: number;
 }
@@ -37,7 +40,7 @@ export class N8nApiClient {
   private maxRetries: number;
 
   constructor(config: N8nApiClientConfig) {
-    const { baseUrl, apiKey, timeout = 30000, maxRetries = 3 } = config;
+    const { baseUrl, apiKey, ipv4, timeout = 30000, maxRetries = 3 } = config;
 
     this.maxRetries = maxRetries;
 
@@ -45,6 +48,9 @@ export class N8nApiClient {
     const apiUrl = baseUrl.endsWith('/api/v1') 
       ? baseUrl 
       : `${baseUrl.replace(/\/$/, '')}/api/v1`;
+    
+    const httpsAgent = new HttpsAgent({ family: 4 });
+    const httpAgent = new HttpAgent({ family: 4 });
 
     this.client = axios.create({
       baseURL: apiUrl,
@@ -55,13 +61,19 @@ export class N8nApiClient {
       },
     });
 
-    // Request interceptor for logging
+    // Request interceptor for logging and setting http/s agents.
     this.client.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         logger.debug(`n8n API Request: ${config.method?.toUpperCase()} ${config.url}`, {
           params: config.params,
           data: config.data,
         });
+        
+        if (ipv4) {
+          config.httpAgent = httpAgent;
+          config.httpsAgent = httpsAgent;
+        }
+          
         return config;
       },
       (error: unknown) => {
