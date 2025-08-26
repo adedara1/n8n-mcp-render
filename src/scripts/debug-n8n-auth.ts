@@ -12,7 +12,7 @@ async function debugN8nAuth() {
   
   console.log('Testing n8n API Authentication...');
   console.log('API URL:', apiUrl);
-  console.log('API Key:', apiKey.substring(0, 20) + '...');
+  console.log('API Key: [REDACTED]');
   
   // Test 1: Direct health check
   console.log('\n=== Test 1: Direct Health Check (no auth) ===');
