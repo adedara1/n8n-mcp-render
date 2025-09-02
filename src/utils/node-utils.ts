@@ -60,6 +60,16 @@ export function getNodeTypeAlternatives(nodeType: string): string[] {
         alternatives.push(`${prefix}.${variant}`);
       });
     }
+    
+    // Try adding common suffixes to base node names
+    // e.g., "schedule" -> "scheduleTrigger"
+    if (nodeName && nodeName.toLowerCase() === nodeName && !nodeName.includes('trigger') && !nodeName.includes('node')) {
+      const commonSuffixes = ['Trigger', 'Node', 'Request', 'Response'];
+      commonSuffixes.forEach(suffix => {
+        alternatives.push(`${prefix}.${nodeName}${suffix}`);
+        alternatives.push(`${prefix}.${nodeName}${suffix.toLowerCase()}`);
+      });
+    }
   }
   
   // If it's just a bare node name, try with common prefixes
@@ -73,6 +83,17 @@ export function getNodeTypeAlternatives(nodeType: string): string[] {
       alternatives.push(`nodes-base.${variant}`);
       alternatives.push(`nodes-langchain.${variant}`);
     });
+    
+    // Try adding common suffixes to bare names
+    if (!nodeType.includes('trigger') && !nodeType.includes('node')) {
+      const commonSuffixes = ['Trigger', 'Node', 'Request', 'Response'];
+      commonSuffixes.forEach(suffix => {
+        alternatives.push(`nodes-base.${nodeType}${suffix}`);
+        alternatives.push(`nodes-langchain.${nodeType}${suffix}`);
+        alternatives.push(`nodes-base.${nodeType}${suffix.toLowerCase()}`);
+        alternatives.push(`nodes-langchain.${nodeType}${suffix.toLowerCase()}`);
+      });
+    }
   }
   
   // Normalize all alternatives and combine with originals
