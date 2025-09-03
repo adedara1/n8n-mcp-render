@@ -243,8 +243,13 @@ export async function seedTestTemplates(
  * Creates a test node with defaults
  */
 export function createTestNode(overrides: Partial<ParsedNode> = {}): ParsedNode {
-  // Filter out undefined values from overrides to prevent them from overriding defaults
+  // Filter out undefined, null, and empty string values for critical fields like packageName
   const cleanOverrides = Object.entries(overrides).reduce((acc, [key, value]) => {
+    // For packageName, filter out undefined, null, and empty strings
+    if (key === 'packageName' && (value === undefined || value === null || value === '')) {
+      return acc; // Skip adding this override
+    }
+    // For other fields, only filter out undefined
     if (value !== undefined) {
       acc[key as keyof ParsedNode] = value;
     }

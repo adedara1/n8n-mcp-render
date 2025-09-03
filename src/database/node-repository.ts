@@ -35,19 +35,19 @@ export class NodeRepository {
     stmt.run(
       node.nodeType,
       packageName,
-      node.displayName,
-      node.description,
-      node.category,
-      node.style,
+      node.displayName || 'Unnamed Node',  // Ensure display_name is never null
+      node.description || null,  // description can be null
+      node.category || null,  // category can be null
+      node.style || 'programmatic',  // Provide default for style
       node.isAITool ? 1 : 0,
       node.isTrigger ? 1 : 0,
       node.isWebhook ? 1 : 0,
       node.isVersioned ? 1 : 0,
-      node.version,
+      node.version || null,  // version can be null
       node.documentation || null,
-      JSON.stringify(node.properties, null, 2),
-      JSON.stringify(node.operations, null, 2),
-      JSON.stringify(node.credentials, null, 2),
+      JSON.stringify(node.properties || [], null, 2),
+      JSON.stringify(node.operations || [], null, 2),
+      JSON.stringify(node.credentials || [], null, 2),
       node.outputs ? JSON.stringify(node.outputs, null, 2) : null,
       node.outputNames ? JSON.stringify(node.outputNames, null, 2) : null
     );

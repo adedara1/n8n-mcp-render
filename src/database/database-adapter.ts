@@ -385,19 +385,29 @@ class SQLJSStatement implements PreparedStatement {
   constructor(private stmt: any, private onModify: () => void) {}
   
   run(...params: any[]): RunResult {
-    if (params.length > 0) {
-      this.bindParams(params);
-      this.stmt.bind(this.boundParams);
+    try {
+      if (params.length > 0) {
+        this.bindParams(params);
+      }
+      
+      // Always bind if we have bound params (from either run() or bind())
+      if (this.boundParams) {
+        this.stmt.bind(this.boundParams);
+      }
+      
+      this.stmt.run();
+      this.onModify();
+      
+      // sql.js doesn't provide changes/lastInsertRowid easily
+      return {
+        changes: 0,
+        lastInsertRowid: 0
+      };
+    } catch (error) {
+      // Reset the statement on error to allow reuse
+      this.stmt.reset();
+      throw error;
     }
-    
-    this.stmt.run();
-    this.onModify();
-    
-    // sql.js doesn't provide changes/lastInsertRowid easily
-    return {
-      changes: 0,
-      lastInsertRowid: 0
-    };
   }
   
   get(...params: any[]): any {
@@ -405,7 +415,10 @@ class SQLJSStatement implements PreparedStatement {
       this.bindParams(params);
     }
     
-    this.stmt.bind(this.boundParams);
+    // Always bind if we have bound params (from either get() or bind())
+    if (this.boundParams) {
+      this.stmt.bind(this.boundParams);
+    }
     
     if (this.stmt.step()) {
       const result = this.stmt.getAsObject();
@@ -422,7 +435,10 @@ class SQLJSStatement implements PreparedStatement {
       this.bindParams(params);
     }
     
-    this.stmt.bind(this.boundParams);
+    // Always bind if we have bound params (from either all() or bind())
+    if (this.boundParams) {
+      this.stmt.bind(this.boundParams);
+    }
     
     const results: any[] = [];
     while (this.stmt.step()) {
@@ -460,6 +476,10 @@ class SQLJSStatement implements PreparedStatement {
   
   bind(...params: any[]): this {
     this.bindParams(params);
+    // Immediately bind to the statement  
+    if (this.boundParams) {
+      this.stmt.bind(this.boundParams);
+    }
     return this;
   }
   
@@ -469,7 +489,8 @@ class SQLJSStatement implements PreparedStatement {
       this.boundParams = params[0];
     } else {
       // Positional parameters - sql.js uses array for positional
-      this.boundParams = params;
+      // SQL.js cannot handle undefined values, convert them to null
+      this.boundParams = params.map(p => p === undefined ? null : p);
     }
   }
   
