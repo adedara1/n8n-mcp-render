@@ -29,7 +29,7 @@ export class NodeRepository {
     
     stmt.run(
       node.nodeType,
-      node.packageName,
+      node.packageName || 'n8n-nodes-base',
       node.displayName,
       node.description,
       node.category,
