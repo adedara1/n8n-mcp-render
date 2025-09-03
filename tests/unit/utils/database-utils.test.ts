@@ -61,12 +61,16 @@ describe('Database Utils', () => {
     it('should skip schema initialization when requested', async () => {
       testDb = await createTestDatabase({ initSchema: false });
       
-      // Verify tables don't exist (SQLite has internal tables, so check for our specific tables)
+      // Verify our specific tables don't exist (ignore any internal SQLite tables)
       const tables = testDb.adapter
         .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('nodes', 'templates')")
         .all() as { name: string }[];
       
       expect(tables.length).toBe(0);
+      
+      // Also verify repositories are not created when schema is not initialized
+      expect(testDb.nodeRepository).toBeNull();
+      expect(testDb.templateRepository).toBeNull();
     });
   });
   

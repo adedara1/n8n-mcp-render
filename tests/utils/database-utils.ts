@@ -85,9 +85,9 @@ export async function createTestDatabase(options: TestDatabaseOptions = {}): Pro
     await initializeDatabaseSchema(adapter, enableFTS5);
   }
   
-  // Create repositories
-  const nodeRepository = new NodeRepository(adapter);
-  const templateRepository = new TemplateRepository(adapter);
+  // Create repositories (only if schema is initialized to avoid table checks)
+  const nodeRepository = initSchema ? new NodeRepository(adapter) : null as any;
+  const templateRepository = initSchema ? new TemplateRepository(adapter) : null as any;
   
   // Cleanup function
   const cleanup = async () => {

@@ -234,6 +234,10 @@ class SQLJSAdapter implements DatabaseAdapter {
   private saveTimer: NodeJS.Timeout | null = null;
   
   constructor(private db: any, private dbPath: string) {
+    // For non-memory databases, save immediately to ensure file exists
+    if (dbPath !== ':memory:') {
+      this.saveToFile();
+    }
     // Set up auto-save on changes
     this.scheduleSave();
   }
@@ -309,6 +313,11 @@ class SQLJSAdapter implements DatabaseAdapter {
   }
   
   private saveToFile(): void {
+    // Don't try to save in-memory databases
+    if (this.dbPath === ':memory:') {
+      return;
+    }
+    
     try {
       const data = this.db.export();
       const buffer = Buffer.from(data);
