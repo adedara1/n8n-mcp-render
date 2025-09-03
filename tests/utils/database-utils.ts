@@ -85,9 +85,9 @@ export async function createTestDatabase(options: TestDatabaseOptions = {}): Pro
     await initializeDatabaseSchema(adapter, enableFTS5);
   }
   
-  // Create repositories (only if schema is initialized to avoid table checks)
-  const nodeRepository = initSchema ? new NodeRepository(adapter) : null as any;
-  const templateRepository = initSchema ? new TemplateRepository(adapter) : null as any;
+  // Create repositories
+  const nodeRepository = new NodeRepository(adapter);
+  const templateRepository = initSchema ? new TemplateRepository(adapter) : ({} as any);
   
   // Cleanup function
   const cleanup = async () => {
@@ -243,6 +243,14 @@ export async function seedTestTemplates(
  * Creates a test node with defaults
  */
 export function createTestNode(overrides: Partial<ParsedNode> = {}): ParsedNode {
+  // Filter out undefined values from overrides to prevent them from overriding defaults
+  const cleanOverrides = Object.entries(overrides).reduce((acc, [key, value]) => {
+    if (value !== undefined) {
+      acc[key as keyof ParsedNode] = value;
+    }
+    return acc;
+  }, {} as Partial<ParsedNode>);
+  
   return {
     style: 'programmatic',
     nodeType: 'nodes-base.test',
@@ -259,7 +267,7 @@ export function createTestNode(overrides: Partial<ParsedNode> = {}): ParsedNode 
     isVersioned: false,
     packageName: 'n8n-nodes-base',
     documentation: undefined,
-    ...overrides
+    ...cleanOverrides
   };
 }
 

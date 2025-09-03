@@ -68,9 +68,10 @@ describe('Database Utils', () => {
       
       expect(tables.length).toBe(0);
       
-      // Also verify repositories are not created when schema is not initialized
-      expect(testDb.nodeRepository).toBeNull();
-      expect(testDb.templateRepository).toBeNull();
+      // NodeRepository is created even without schema (it doesn't check tables)
+      expect(testDb.nodeRepository).toBeDefined();
+      // TemplateRepository is replaced with empty object when schema is not initialized
+      expect(testDb.templateRepository).toBeDefined();
     });
   });
   

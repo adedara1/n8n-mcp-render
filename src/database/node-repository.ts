@@ -27,9 +27,14 @@ export class NodeRepository {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     
+    // Ensure packageName is never null/undefined/empty
+    const packageName = node.packageName && node.packageName.trim() 
+      ? node.packageName 
+      : 'n8n-nodes-base';
+    
     stmt.run(
       node.nodeType,
-      node.packageName || 'n8n-nodes-base',
+      packageName,
       node.displayName,
       node.description,
       node.category,
