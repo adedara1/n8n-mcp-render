@@ -6,6 +6,7 @@ import { logger } from '../utils/logger';
 const n8nApiConfigSchema = z.object({
   N8N_API_URL: z.string().url().optional(),
   N8N_API_KEY: z.string().min(1).optional(),
+  N8N_API_FORCE_IPV4: z.coerce.boolean().default(false),
   N8N_API_TIMEOUT: z.coerce.number().positive().default(30000),
   N8N_API_MAX_RETRIES: z.coerce.number().positive().default(3),
 });
@@ -35,6 +36,7 @@ export function getN8nApiConfig() {
   }
   
   return {
+    ipv4: config.N8N_API_FORCE_IPV4,
     baseUrl: config.N8N_API_URL,
     apiKey: config.N8N_API_KEY,
     timeout: config.N8N_API_TIMEOUT,
