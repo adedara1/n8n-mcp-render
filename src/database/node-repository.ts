@@ -6,10 +6,17 @@ export class NodeRepository {
   private db: DatabaseAdapter;
   
   constructor(dbOrService: DatabaseAdapter | SQLiteStorageService) {
-    if ('db' in dbOrService) {
+    // SQLiteStorageService has a 'db' property that contains the actual database
+    // DatabaseAdapter IS the database interface itself
+    if ('prepare' in dbOrService) {
+      // It's a DatabaseAdapter (has prepare method), use it directly
+      this.db = dbOrService as DatabaseAdapter;
+    } else if ('db' in dbOrService) {
+      // It's SQLiteStorageService, extract the db property
       this.db = dbOrService.db;
     } else {
-      this.db = dbOrService;
+      // Fallback - should not happen but handle gracefully
+      this.db = dbOrService as DatabaseAdapter;
     }
   }
   

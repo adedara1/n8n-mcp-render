@@ -404,49 +404,74 @@ class SQLJSStatement implements PreparedStatement {
         lastInsertRowid: 0
       };
     } catch (error) {
-      // Reset the statement on error to allow reuse
+      // Reset statement and clear state on error
       this.stmt.reset();
+      this.boundParams = null;
       throw error;
+    } finally {
+      // Always clear bound params and reset statement for clean state
+      this.boundParams = null;
+      this.stmt.reset();
     }
   }
   
   get(...params: any[]): any {
-    if (params.length > 0) {
-      this.bindParams(params);
-    }
-    
-    // Always bind if we have bound params (from either get() or bind())
-    if (this.boundParams) {
-      this.stmt.bind(this.boundParams);
-    }
-    
-    if (this.stmt.step()) {
-      const result = this.stmt.getAsObject();
+    try {
+      if (params.length > 0) {
+        this.bindParams(params);
+      }
+      
+      // Always bind if we have bound params (from either get() or bind())
+      if (this.boundParams) {
+        this.stmt.bind(this.boundParams);
+      }
+      
+      if (this.stmt.step()) {
+        const result = this.stmt.getAsObject();
+        this.stmt.reset();
+        return this.convertIntegerColumns(result);
+      }
+      
       this.stmt.reset();
-      return this.convertIntegerColumns(result);
+      return undefined;
+    } catch (error) {
+      // Reset statement and clear state on error
+      this.stmt.reset();
+      this.boundParams = null;
+      throw error;
+    } finally {
+      // Always clear bound params for clean state
+      this.boundParams = null;
     }
-    
-    this.stmt.reset();
-    return undefined;
   }
   
   all(...params: any[]): any[] {
-    if (params.length > 0) {
-      this.bindParams(params);
+    try {
+      if (params.length > 0) {
+        this.bindParams(params);
+      }
+      
+      // Always bind if we have bound params (from either all() or bind())
+      if (this.boundParams) {
+        this.stmt.bind(this.boundParams);
+      }
+      
+      const results: any[] = [];
+      while (this.stmt.step()) {
+        results.push(this.convertIntegerColumns(this.stmt.getAsObject()));
+      }
+      
+      this.stmt.reset();
+      return results;
+    } catch (error) {
+      // Reset statement and clear state on error
+      this.stmt.reset();
+      this.boundParams = null;
+      throw error;
+    } finally {
+      // Always clear bound params for clean state
+      this.boundParams = null;
     }
-    
-    // Always bind if we have bound params (from either all() or bind())
-    if (this.boundParams) {
-      this.stmt.bind(this.boundParams);
-    }
-    
-    const results: any[] = [];
-    while (this.stmt.step()) {
-      results.push(this.convertIntegerColumns(this.stmt.getAsObject()));
-    }
-    
-    this.stmt.reset();
-    return results;
   }
   
   iterate(...params: any[]): IterableIterator<any> {
@@ -476,10 +501,8 @@ class SQLJSStatement implements PreparedStatement {
   
   bind(...params: any[]): this {
     this.bindParams(params);
-    // Immediately bind to the statement  
-    if (this.boundParams) {
-      this.stmt.bind(this.boundParams);
-    }
+    // Don't bind immediately - let run/get/all handle the actual binding
+    // This prevents double-binding issues
     return this;
   }
   
