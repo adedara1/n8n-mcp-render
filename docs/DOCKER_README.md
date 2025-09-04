@@ -65,6 +65,7 @@ docker run -d \
 | `NODE_ENV` | Environment: `development` or `production` | `production` | No |
 | `LOG_LEVEL` | Logging level: `debug`, `info`, `warn`, `error` | `info` | No |
 | `NODE_DB_PATH` | Custom database path (v2.7.16+) | `/app/data/nodes.db` | No |
+| `N8N_CERT_PATH` | Path to SSL certificate for self-signed n8n instances | - | No |
 
 *Either `AUTH_TOKEN` or `AUTH_TOKEN_FILE` must be set for HTTP mode. If both are set, `AUTH_TOKEN` takes precedence.
 
@@ -282,6 +283,76 @@ docker ps --format "table {{.Names}}\t{{.Status}}"
 # View health check logs
 docker inspect n8n-mcp | jq '.[0].State.Health'
 ```
+
+## 🔐 SSL Certificate Configuration
+
+### Self-Signed Certificates
+
+If your n8n instance uses a self-signed SSL certificate, you need to mount the certificate file and configure the `N8N_CERT_PATH` environment variable:
+
+#### Basic Docker Run
+
+```bash
+# Run with mounted certificate
+docker run -d \
+  --name n8n-mcp \
+  -e MCP_MODE=http \
+  -e AUTH_TOKEN=your-secure-token \
+  -e N8N_API_URL=https://your-n8n-instance.com \
+  -e N8N_API_KEY=your-api-key \
+  -e N8N_CERT_PATH=/app/certs/n8n.crt \
+  -v /path/to/your/certificate.crt:/app/certs/n8n.crt:ro \
+  -p 3000:3000 \
+  ghcr.io/czlonkowski/n8n-mcp:latest
+```
+
+#### Docker Compose Configuration
+
+Add certificate configuration to your `docker-compose.yml`:
+
+```yaml
+services:
+  n8n-mcp:
+    image: ghcr.io/czlonkowski/n8n-mcp:latest
+    environment:
+      MCP_MODE: http
+      AUTH_TOKEN: ${AUTH_TOKEN}
+      N8N_API_URL: https://your-n8n-instance.com
+      N8N_API_KEY: ${N8N_API_KEY}
+      N8N_CERT_PATH: /app/certs/n8n.crt
+    volumes:
+      - n8n-mcp-data:/app/data
+      - /path/to/your/certificate.crt:/app/certs/n8n.crt:ro
+    ports:
+      - "3000:3000"
+```
+
+#### Certificate Troubleshooting
+
+**Common Issues:**
+
+1. **Certificate not found error:**
+   ```bash
+   # Verify the certificate is properly mounted
+   docker exec n8n-mcp ls -la /app/certs/
+   ```
+
+2. **Permission denied:**
+   ```bash
+   # Ensure certificate is readable
+   chmod 644 /path/to/your/certificate.crt
+   ```
+
+3. **Invalid certificate format:**
+   - Certificate must be in PEM format (.crt or .pem)
+   - Check with: `openssl x509 -in certificate.crt -text -noout`
+
+4. **Still can't connect:**
+   ```bash
+   # Test certificate directly
+   openssl s_client -connect your-n8n-instance.com:443 \
+     -CAfile /path/to/your/certificate.crt -showcerts
+   ```
 
 ## 🔒 Security Considerations
 
