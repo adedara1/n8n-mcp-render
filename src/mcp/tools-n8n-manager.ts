@@ -62,7 +62,8 @@ export const n8nManagementTools: ToolDefinition[] = [
             saveExecutionProgress: { type: 'boolean' },
             executionTimeout: { type: 'number' },
             errorWorkflow: { type: 'string' }
-          }
+          },
+          required: []
         }
       },
       required: ['name', 'nodes', 'connections']
@@ -264,7 +265,8 @@ export const n8nManagementTools: ToolDefinition[] = [
               enum: ['minimal', 'runtime', 'ai-friendly', 'strict'],
               description: 'Validation profile to use (default: runtime)' 
             }
-          }
+          },
+          required: []
         }
       },
       required: ['id']
@@ -352,7 +354,8 @@ export const n8nManagementTools: ToolDefinition[] = [
           type: 'boolean', 
           description: 'Include execution data (default: false)' 
         }
-      }
+      },
+      required: []
     }
   },
   {
@@ -376,7 +379,8 @@ export const n8nManagementTools: ToolDefinition[] = [
     description: `Check n8n instance health and API connectivity. Returns status and available features.`,
     inputSchema: {
       type: 'object',
-      properties: {}
+      properties: {},
+      required: []
     }
   },
   {
@@ -384,7 +388,8 @@ export const n8nManagementTools: ToolDefinition[] = [
     description: `List available n8n tools and capabilities.`,
     inputSchema: {
       type: 'object',
-      properties: {}
+      properties: {},
+      required: []
     }
   },
   {
@@ -397,7 +402,8 @@ export const n8nManagementTools: ToolDefinition[] = [
           type: 'boolean',
           description: 'Include detailed debug information (default: false)'
         }
-      }
+      },
+      required: []
     }
   }
 ];

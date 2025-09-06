@@ -615,6 +615,7 @@ npm run rebuild
 # 5. Start the server
 npm start          # stdio mode for Claude Desktop
 npm run start:http # HTTP mode for remote access
+npm run start:sse  # SSE mode for n8n MCP Server Trigger
 ```
 
 ### Development Commands
@@ -634,6 +635,7 @@ npm run update:n8n        # Update n8n packages
 # Run Server
 npm run dev            # Development with auto-reload
 npm run dev:http       # HTTP dev mode
+npm run dev:sse        # SSE dev mode
 ```
 
 ## 📚 Documentation
@@ -653,6 +655,7 @@ npm run dev:http       # HTTP dev mode
 ### Development & Deployment
 - [Railway Deployment](./docs/RAILWAY_DEPLOYMENT.md) - One-click cloud deployment guide
 - [HTTP Deployment](./docs/HTTP_DEPLOYMENT.md) - Remote server setup guide
+- [SSE Implementation](./docs/SSE_IMPLEMENTATION.md) - Server-Sent Events for n8n triggers
 - [Dependency Management](./docs/DEPENDENCY_UPDATES.md) - Keeping n8n packages in sync
 - [Claude's Interview](./docs/CLAUDE_INTERVIEW.md) - Real-world impact of n8n-MCP
 

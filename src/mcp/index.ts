@@ -53,6 +53,11 @@ async function main() {
         
         await server.start();
       }
+    } else if (mode === 'sse') {
+      // SSE mode - for n8n MCP Server Trigger integration
+      console.error('Starting n8n Documentation MCP Server in SSE mode...');
+      const { startSSEServer } = await import('../sse-server');
+      await startSSEServer();
     } else {
       // Stdio mode - for local Claude Desktop
       const server = new N8NDocumentationMCPServer();
