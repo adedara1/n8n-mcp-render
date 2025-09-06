@@ -1,0 +1,95 @@
+{
+  "name": "MCP Server Trigger with SSE Example",
+  "nodes": [
+    {
+      "parameters": {
+        "eventSourceUrl": "http://localhost:3000/sse",
+        "messageEndpoint": "http://localhost:3000/mcp/message",
+        "authentication": "bearerToken",
+        "options": {
+          "reconnect": true,
+          "reconnectInterval": 5000
+        }
+      },
+      "id": "mcp-server-trigger",
+      "name": "MCP Server Trigger",
+      "type": "n8n-nodes-base.mcpServerTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "credentials": {
+        "mcpApi": {
+          "id": "1",
+          "name": "MCP API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "callTool",
+        "toolName": "={{ $json.toolName }}",
+        "toolArguments": "={{ JSON.stringify($json.arguments) }}"
+      },
+      "id": "mcp-client",
+      "name": "MCP Client",
+      "type": "n8n-nodes-base.mcp",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "mcpApi": {
+          "id": "1",
+          "name": "MCP API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "response",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-response",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [650, 300]
+    }
+  ],
+  "connections": {
+    "MCP Server Trigger": {
+      "main": [
+        [
+          {
+            "node": "MCP Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {},
+  "versionId": "sse-example-v1",
+  "triggerCount": 0,
+  "tags": []
+}

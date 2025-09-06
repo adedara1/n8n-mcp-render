@@ -5,6 +5,7 @@
  */
 import express from 'express';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { DEFAULT_NEGOTIATED_PROTOCOL_VERSION } from '@modelcontextprotocol/sdk/types.js';
 import { n8nDocumentationToolsFinal } from './mcp/tools';
 import { n8nManagementTools } from './mcp/tools-n8n-manager';
 import { N8NDocumentationMCPServer } from './mcp/server';
@@ -360,7 +361,7 @@ export async function startFixedHTTPServer() {
               response = {
                 jsonrpc: '2.0',
                 result: {
-                  protocolVersion: negotiationResult.version,
+                  protocolVersion: DEFAULT_NEGOTIATED_PROTOCOL_VERSION,
                   capabilities: {
                     tools: {},
                     resources: {}

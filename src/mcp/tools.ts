@@ -24,6 +24,7 @@ export const n8nDocumentationToolsFinal: ToolDefinition[] = [
           default: 'essentials',
         },
       },
+      required: [],
     },
   },
   {
@@ -55,6 +56,7 @@ export const n8nDocumentationToolsFinal: ToolDefinition[] = [
           default: 50,
         },
       },
+      required: [],
     },
   },
   {
@@ -102,6 +104,7 @@ export const n8nDocumentationToolsFinal: ToolDefinition[] = [
     inputSchema: {
       type: 'object',
       properties: {},
+      required: [],
     },
   },
   {
@@ -124,6 +127,7 @@ export const n8nDocumentationToolsFinal: ToolDefinition[] = [
     inputSchema: {
       type: 'object',
       properties: {},
+      required: [],
     },
   },
   {
@@ -188,6 +192,7 @@ export const n8nDocumentationToolsFinal: ToolDefinition[] = [
           description: 'Filter by category (optional)',
         },
       },
+      required: [],
     },
   },
   {
@@ -437,6 +442,7 @@ export const n8nDocumentationToolsFinal: ToolDefinition[] = [
               default: 'runtime',
             },
           },
+          required: [],
           description: 'Optional validation settings',
         },
       },
